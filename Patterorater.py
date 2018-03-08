@@ -8,6 +8,7 @@ lines = [x.strip() for x in lines]
 # List where all output goes
 out = []
 curHard = [None]
+curLit = [None]
 path = os.path.dirname(os.path.realpath(__file__))
 
 def checkHard(line):
@@ -27,11 +28,22 @@ def checkHard(line):
                 curHard.append(hard.read())
         except:
             out.append('ERROR! No hard ' + hardName)
+def checkLiteral(line):
+    try:
+        int(line)
+        del curLit[0]
+        curLit.append(line)
+        done = True
+    except:
+        done = False
 def checkShow(line):
     if line[:5] == 'show ':
         checkHard(line[5:])
+        checkLiteral(line[5:])
         if curHard[0] != None:
             out.append(curHard[0])
+        elif curLit[0] != None:
+            out.append(curLit[0])
 # Parse Patker code
 for line in lines:
     curHard = [None]
