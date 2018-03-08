@@ -41,6 +41,8 @@ def checkLiteral(line):
         if regex.match(line):
             del curLit[0]
             curLit.append(eval(line))
+        # del curLit[0]
+        # curLit.append(eval(line))
 def checkHard(line):
     # Handle creating hards
     if line[:5] == 'hard ':
@@ -55,8 +57,8 @@ def checkHard(line):
         with open(hardName + '.hard', 'w') as newHard:
             newHard.write(str(curVar))
             # Handle showing hards
-    if line[:7] == 'recall ':
-        hardName = line[7: ]
+    if line[:21] == 'whatdoesthatevenmean ':
+        hardName = line[21: ]
         try:
             with open(hardName + '.hard', 'r') as hard:
                 del curHard[0]
@@ -64,9 +66,9 @@ def checkHard(line):
         except:
             out.append('ERROR! No hard ' + hardName)
 def checkShow(line):
-    if line[:5] == 'show ':
-        checkHard(line[5:])
-        checkLiteral(line[5:])
+    if line[:7] == 'reveal ':
+        checkHard(line[7:])
+        checkLiteral(line[7:])
         if curHard[0] != None:
             out.append(curHard[0])
         elif curLit[0] != None:
