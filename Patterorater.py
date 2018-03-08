@@ -9,6 +9,7 @@ lines = [x.strip() for x in lines]
 out = []
 curHard = [None]
 curLit = [None]
+curLitType = [None]
 path = os.path.dirname(os.path.realpath(__file__))
 
 def checkHard(line):
@@ -32,10 +33,24 @@ def checkLiteral(line):
     try:
         int(line)
         del curLit[0]
+        del curLitType[0]
         curLit.append(line)
+        curLit.append('num')
         done = True
     except:
         done = False
+    if not done:
+        if line.startswith('"') and line.endswith('"'):
+            del curLit[0]
+            curLit.append(line[line.find('"'):line[line.find('"')].find('"')])
+            del curLitType[0]
+            curLitType.append("Words")
+        if line.startswith("'") and line.endswith("'"):
+            del curLit[0]
+            curLit.append(line[line.find("'"):line[line.find("'")].find("'")])
+            del curLitType[0]
+            curLitType.append("Words")
+
 def checkShow(line):
     if line[:5] == 'show ':
         checkHard(line[5:])
@@ -47,6 +62,8 @@ def checkShow(line):
 # Parse Patker code
 for line in lines:
     curHard = [None]
+    curLit = [None]
+    curLitType = [None]
     checkHard(line)
     checkShow(line)
 
