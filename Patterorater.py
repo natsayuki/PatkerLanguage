@@ -1,4 +1,5 @@
 import os
+import re
 
 # Get src patker
 with open('src.patker') as file:
@@ -12,23 +13,7 @@ curLit = [None]
 curLitType = [None]
 path = os.path.dirname(os.path.realpath(__file__))
 
-def checkHard(line):
-    # Handle creating hards
-    if line[:5] == 'hard ':
-        dec = line[5: ]
-        hardName = dec[:dec.find(' ')]
-        dec = dec[dec.find(' ') + 1:]
-        with open(hardName + '.hard', 'w') as newHard:
-            newHard.write(dec)
-            # Handle showing hards
-    if line[:7] == 'recall ':
-        hardName = line[7: ]
-        try:
-            with open(hardName + '.hard', 'r') as hard:
-                del curHard[0]
-                curHard.append(hard.read())
-        except:
-            out.append('ERROR! No hard ' + hardName)
+
 def checkLiteral(line):
     try:
         int(line)
@@ -42,15 +27,42 @@ def checkLiteral(line):
     if not done:
         if line.startswith('"') and line.endswith('"'):
             del curLit[0]
-            curLit.append(line[line.find('"'):line[line.find('"')].find('"')])
+            restline = line[line.find('"') + 1:line[line.find('"') + 1:].find('"') + 1]
+            curLit.append(restline)
             del curLitType[0]
             curLitType.append("Words")
         if line.startswith("'") and line.endswith("'"):
             del curLit[0]
-            curLit.append(line[line.find("'"):line[line.find("'")].find("'")])
+            restline = line[line.find("'") + 1:line[line.find("'") + 1:].find("'") + 1]
+            curLit.append(restline)
             del curLitType[0]
             curLitType.append("Words")
-
+        regex = re.compile('[0-9]+ \+ [0-9]+')
+        if regex.match(line):
+            del curLit[0]
+            curLit.append(eval(line))
+def checkHard(line):
+    # Handle creating hards
+    if line[:5] == 'hard ':
+        dec = line[5: ]
+        hardName = dec[:dec.find(' ')]
+        dec = dec[dec.find(' ') + 1:]
+        checkLiteral(dec)
+        curVar = curLit[0]
+        if curLit[0] == None:
+            checkHard(dec)
+            curVar = curHard[0]
+        with open(hardName + '.hard', 'w') as newHard:
+            newHard.write(str(curVar))
+            # Handle showing hards
+    if line[:7] == 'recall ':
+        hardName = line[7: ]
+        try:
+            with open(hardName + '.hard', 'r') as hard:
+                del curHard[0]
+                curHard.append(hard.read())
+        except:
+            out.append('ERROR! No hard ' + hardName)
 def checkShow(line):
     if line[:5] == 'show ':
         checkHard(line[5:])
